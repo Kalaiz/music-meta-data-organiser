@@ -1,6 +1,6 @@
 # Music meta-data organiser
 ![Status](https://img.shields.io/badge/status-work--in--progress-red)
-A script which cleans and organises the metadata of music files. 
+A command line tool which cleans and organises the metadata of music files. 
 
 
 ## Table of Content:

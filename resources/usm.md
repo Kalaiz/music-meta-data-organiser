@@ -19,5 +19,5 @@ Process
         As an user, I want to start the execution of the tool, so that I can clean and organise my music files.|{"s":8}
         As an user, I want to know how much progress has been made by the running tools, so that I am confident that the tool is working.|{"s":7}
     Status
-        As an user, I want to continue cleaning and organising a specific directory, upon which the tool has already worked in the past, so that I do not have to clean files which are already clean.|{"s":8}
+        As an user, I want to continue cleaning and organising a specific directory, upon which the tool has already worked in the past, so that I do not have to clean files which are already clean.|{"s":7}
 

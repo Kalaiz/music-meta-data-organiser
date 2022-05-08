@@ -1,7 +1,8 @@
 
 from queue import Queue
-import os 
-AUDIO_EXTENSION = ["mp3","m4a","aac","oga","flac","wav"]
+import os
+from util import SUPPORTED_AUDIO_EXTENSIONS 
+
 
 def traverse(path=None) -> Queue:
     if not path:
@@ -15,7 +16,7 @@ def traverse(path=None) -> Queue:
     queue = Queue()
     for root, _, files in os.walk(path):
         for file in files:
-            if file.split(".")[-1] in AUDIO_EXTENSION:
+            if file.split(".")[-1] in SUPPORTED_AUDIO_EXTENSIONS:
                 queue.put(root+'/'+file)
         
     return queue

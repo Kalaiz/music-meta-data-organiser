@@ -7,73 +7,112 @@
 # Testing
 
 
+import json
 import random
+import os
 import sys
 import asyncio
 from time import sleep
 from shazamio import Shazam
+from parser import fetch_album, fetch_artist, fetch_cover_art_url, fetch_title
 from  traverse import traverse
-from convert import convert_to_mp3
-from mutagen.id3 import ID3,APIC
+from convert import  convert_to_specific_format
+from mutagen.id3 import ID3,APIC,ID3NoHeaderError
 from urllib.request import urlopen
 import logging
+from mutagen import File
+from mutagen.mp4 import MP4
+from mutagen.easyid3 import EasyID3
+import util
+
+
 
 def main() -> int:
     # TODO : read args and act accordingly
-    # TODO: custom file naming convention
-    logging.basicConfig(filename="meta-data-organiser.log",  level=logging.DEBUG)
+    logging.basicConfig(filename="meta-data-organiser.log")
+    logging.root.setLevel(logging.NOTSET)
+    logging.getLogger().addHandler(logging.StreamHandler())
+
     queue = traverse()
     asyncio.run(process(queue))
     return 0
 
 async def process(queue,args=None):
+
     shazam = Shazam()
     temp = 0
     logging.debug(queue)
-    print(queue.qsize())
+
     while queue:
-        current_music_file = queue.get()
-        # if  ".mp3" not in current_music_file:
-        #     convert_to_mp3(current_music_file)
+        current_music_file_path = queue.get()
 
-        # TODO : Remove all tags 
-        if ".m4a" in current_music_file:
-            print(current_music_file)
-            result = await shazam.recognize_song(current_music_file)
-            print(result)
+        result = await shazam.recognize_song(current_music_file_path)
+        logging.debug(json.dumps(result))
 
-            temp+=1
-            sleep(random.uniform(0.1,2))
-            if temp ==5:
-                break
+        # TODO: Standardise formats if requested
+        # TODO: Parse args
+        # format = "mp3"
+        # convert_to_specific_format(current_music_file_path,format=format)
 
-        # 
-       
-        # current_music_file_meta_data = ID3(current_music_file)   
-        # print(current_music_file_meta_data)
-        # print("==============")
-        # print(result)
-        # print("==============")
 
-        # cover_art_image_url = ""
-        # title = ""
-        # artist = ""
-        # album = ""
-        # current_music_file_meta_data["title"]= title
-        # current_music_file_meta_data["artist"]= artist
-        # current_music_file_meta_data["album"]= album
-        # cover_art = urlopen(cover_art_image_url)
+        # TODO: Remove this later
+        temp+=1
+        sleep(random.uniform(0.1,2))
+        if temp == 5:
+            break
 
-        # current_music_file_meta_data['APIC'] = APIC(
-        #                 encoding=3,
-        #                 mime='image/jpeg',
-        #                 type=3,
-        #                 desc=u'Cover',
-        #                 data=cover_art.read()
-        #                 )
+        try:
+         if current_music_file_path.endswith(".m4a"):
+            current_music_file_meta_data = MP4(current_music_file_path,easy=True).tags
+         else:
+            current_music_file_meta_data = EasyID3(current_music_file_path)   
+        except ID3NoHeaderError:
+            id3_tag = ID3()
+            id3_tag.save(current_music_file_path)
+            current_music_file_meta_data = EasyID3(current_music_file_path)   
+           
+        logging.debug(current_music_file_meta_data)
+        logging.debug("==============")
+        logging.debug(result)
+        logging.debug("==============")
 
-        # cover_art.close()
-        # current_music_file_meta_data.save()
+        cover_art_image_url = fetch_cover_art_url(result)
+        title = fetch_title(result)
+        artist = fetch_artist(result)
+        album = fetch_album(result)
+
+        current_music_file_meta_data["title"]= title
+        current_music_file_meta_data["artist"]= artist
+        current_music_file_meta_data["album"]= album
+        
+
+
+        current_music_file_album_meta_data = ID3(current_music_file_path)
+        logging.debug(current_music_file_album_meta_data.getall("APIC"))
+
+        cover_art_mime_type = util.guess_mime_type(cover_art_image_url)
+        if cover_art_mime_type:
+            cover_art = urlopen(cover_art_image_url)
+            logging.debug(cover_art_image_url)
+            current_music_file_album_meta_data.add(APIC(
+                            encoding=3,
+                            mime=u'image/jpg',
+                            type=3,
+                            desc=u'Cover',
+                            data=cover_art.read()
+                            ))
+            current_music_file_album_meta_data.save()
+            cover_art.close()
+
+        
+        current_music_file_meta_data.save()
+
+        base_path,file_name = os.path.split(current_music_file_path)
+        file_extension = file_name.split('.')[-1]
+        new_file_name = title + '.' + file_extension
+        new_file_path = os.path.join(base_path,new_file_name)
+        os.rename(current_music_file_path,new_file_path)
+        
 
 
 

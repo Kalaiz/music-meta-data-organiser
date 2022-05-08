@@ -38,6 +38,7 @@ class AudioMetaData:
 
     def set_cover_art_url(self,cover_art_url)->AudioMetaData:
         self.cover_art_url = cover_art_url
+        self._set_attribute("cover-art",self.extension,cover_art_url)
         return self
 
 
@@ -66,12 +67,12 @@ class AudioMetaData:
             meta_tag[actual_attribute_name] = value
             
 
-    def _set_cover_art(self,extension,actual_attribute_value,meta_tag,value):
-        cover_art_mime_type = guess_mime_type(self.cover_art_url)
-        image_type = get_extension(self.cover_art_url)
+    def _set_cover_art(self,extension,actual_attribute_value,meta_tag,url):
+        cover_art_mime_type = guess_mime_type(url)
+        image_type = get_extension(url)
         if cover_art_mime_type:
+            cover_art = urlopen(url)
             if extension in ID3_SUPPORTED_AUDIO_EXTENSION:
-                cover_art = urlopen(value)
                 meta_tag.add(APIC(
                                 encoding=3,
                                 mime=cover_art_mime_type,

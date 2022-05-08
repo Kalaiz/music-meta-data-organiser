@@ -7,7 +7,6 @@
 
 import json
 import random
-import os
 import sys
 import asyncio
 from time import sleep
@@ -16,12 +15,7 @@ from parser import fetch_album, fetch_artist, fetch_cover_art_url, fetch_title
 from audio_meta_data import AudioMetaData
 from traverse import traverse
 from convert import convert_to_specific_format
-from mutagen.id3 import ID3, APIC, ID3NoHeaderError
-from urllib.request import urlopen
 import logging
-from mutagen import File
-from mutagen.mp4 import MP4, MP4Cover
-from mutagen.easyid3 import EasyID3
 import util
 
 
@@ -39,12 +33,10 @@ def main() -> int:
 async def process(queue, args=None):
 
     shazam = Shazam()
-    temp = 0
     logging.debug(queue)
 
     while queue:
         current_music_file_path = queue.get()
-
         result = await shazam.recognize_song(current_music_file_path)
         logging.debug(json.dumps(result))
 
@@ -55,9 +47,7 @@ async def process(queue, args=None):
 
         sleep(random.uniform(0.1, 2))
 
-        if temp == 10:
-            break
-        temp +=1
+
         audio_meta_data = AudioMetaData(current_music_file_path)
 
         cover_art_image_url = fetch_cover_art_url(result)

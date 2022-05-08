@@ -7,7 +7,7 @@ from convert import convert_to_specific_format
 import util_test
 
 
-BASE_PATH = "test"
+
 TEST_DATA_DIRECTORY = "test-data"
 TEST_RUN_DIRECTORY = "test-run-data"
 CONVERT_DIRECTORY = "convert"
@@ -21,8 +21,8 @@ class TestConvertToSpecificFormat:
     @classmethod
     def setup_class(cls):
         current_path =  os.getcwd() 
-        absolute_test_run_path = os.path.join(current_path,BASE_PATH,TEST_RUN_DIRECTORY)
-        absolute_test_data_path = os.path.join(current_path,BASE_PATH,TEST_DATA_DIRECTORY)
+        absolute_test_run_path = os.path.join(current_path,TEST_RUN_DIRECTORY)
+        absolute_test_data_path = os.path.join(current_path,TEST_DATA_DIRECTORY)
         logging.debug("Setting up: convert to specific format test")
         if os.path.exists(absolute_test_run_path):
             logging.debug("Previous test run was shut off abruptly; Removing old test run folder.")
@@ -42,7 +42,6 @@ class TestConvertToSpecificFormat:
 
     def test_if_audio_file_to_mp3(self):
         convert_directory_path = os.path.join(self.__class__.absolute_test_run_directory,CONVERT_DIRECTORY)
-
         file_paths = util_test.get_file_paths(convert_directory_path,has_basic)
         
         for file_path in file_paths:
@@ -68,7 +67,6 @@ class TestConvertToSpecificFormat:
 
     def test_if_old_file_exist(self):
         convert_directory_path = os.path.join(self.__class__.absolute_test_run_directory,CONVERT_DIRECTORY)
-
         file_paths = util_test.get_file_paths(convert_directory_path,has_old_file_exist)
 
         for file_path in file_paths:

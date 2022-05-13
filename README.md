@@ -39,7 +39,8 @@ A command line tool which can standardise formats of music files, add meta data 
 
 
 ### 🔖 References:
-
+- [Characters to avoid when naming file names, across all platforms.](https://www.mtu.edu/umc/services/websites/writing/characters-avoid/)
+- [Maximum file name size](https://mossgreen.github.io/filenames-that-cross-platforms/)
 
 ### ⚙️ Installation:
 

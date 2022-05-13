@@ -91,7 +91,9 @@ class AudioMetaData:
                     return 
                 meta_tag[actual_attribute_value] =  [MP4Cover(cover_art.read(), imageformat=image_format)]
 
-
+    def remove_cover_art(self):
+        self.meta_tag.delall("APIC")
+        return self
 
     def save(self):   
         self.meta_tag.save()

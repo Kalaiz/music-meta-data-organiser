@@ -17,12 +17,14 @@ from traverse import traverse
 from convert import convert_to_specific_format
 import logging
 import util
+from progress.bar import Bar
+from pydub.exceptions import CouldntDecodeError
 
 
 def main() -> int:
     # TODO : read args and act accordingly
     logging.basicConfig(filename="meta-data-organiser.log")
-    logging.root.setLevel(logging.NOTSET)
+    logging.root.setLevel(logging.INFO)
     logging.getLogger().addHandler(logging.StreamHandler())
 
     queue = traverse()
@@ -33,11 +35,17 @@ def main() -> int:
 async def process(queue, args=None):
 
     shazam = Shazam()
-    logging.debug(queue)
 
+    bar = Bar("Current progress", max=queue.qsize())
     while queue:
         current_music_file_path = queue.get()
-        result = await shazam.recognize_song(current_music_file_path)
+
+        logging.info("\nProcessing "+ current_music_file_path)
+
+        try:
+            result = await shazam.recognize_song(current_music_file_path)
+        except CouldntDecodeError :
+            logging.error("Could not decode "+ current_music_file_path+" Skipping it.... ")
         logging.debug(json.dumps(result))
 
         # TODO: Standardise formats if requested
@@ -45,7 +53,6 @@ async def process(queue, args=None):
         # format = "mp3"
         # convert_to_specific_format(current_music_file_path,format=format)
 
-        sleep(random.uniform(0.1, 2))
 
 
         audio_meta_data = AudioMetaData(current_music_file_path)
@@ -55,15 +62,23 @@ async def process(queue, args=None):
         artist = fetch_artist(result)
         album = fetch_album(result)
 
-        audio_meta_data.set_title(title) \
+        audio_meta_data = audio_meta_data.set_title(title) \
                        .set_album(album)  \
                        .set_artist(artist) \
-                       .set_cover_art_url(cover_art_image_url)
+                       .remove_cover_art()
+                    #    .set_cover_art_url(cover_art_image_url)
        
         audio_meta_data.save()
 
-        util.rename_file_name(current_music_file_path,title)
+        cleaned_title = util.clean_title(title)
+        util.rename_file_name(current_music_file_path,cleaned_title)
+        sleep(random.uniform(0.1, 5))
+
+        bar.next()
+        logging.info("\n")
+        
 
 
+    bar.finish()
 if __name__ == '__main__':
     sys.exit(main())

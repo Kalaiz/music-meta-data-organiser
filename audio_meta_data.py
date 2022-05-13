@@ -92,7 +92,11 @@ class AudioMetaData:
                 meta_tag[actual_attribute_value] =  [MP4Cover(cover_art.read(), imageformat=image_format)]
 
     def remove_cover_art(self):
-        self.meta_tag.delall("APIC")
+        if self.is_id3_supported:
+            self.meta_tag.delall("APIC")
+        elif self.extension == "m4a":
+            _, cover_art_attribute = self._get_meta_tag_attribute_name("cover-art",self.extension)
+            self.meta_tag[cover_art_attribute] = []
         return self
 
     def save(self):   

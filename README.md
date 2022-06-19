@@ -32,6 +32,7 @@ A command line tool which can standardise formats of music files, add meta data 
 - PyDub
 - Pytest
 - Python
+- docopt
 
 
 ### ✍️ [Reflection](/resources/reflection.md)
@@ -43,6 +44,9 @@ A command line tool which can standardise formats of music files, add meta data 
 - [Maximum file name size](https://mossgreen.github.io/filenames-that-cross-platforms/)
 
 ### ⚙️ Installation:
+1) Having this repository's content as the root folder, install relevant python packages by running ```pip3 install -r requirement.txt```
+
+2) Simply run ```python3  music_meta_data_organiser.py -h``` to find out on how to use this command line tool.
 
 
 

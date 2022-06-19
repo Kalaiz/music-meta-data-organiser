@@ -1,0 +1,2 @@
+class NoSuchPath(Exception):
+    pass

@@ -22,23 +22,27 @@ class AudioMetaData:
             self.simple_meta_tag = get_meta_tag(file_path=file_path,extension=self.extension,easy=True)
     
     def set_title(self,title)->AudioMetaData:
-        self.title = title
-        self._set_attribute("title",self.extension,title)
+        if title:
+            self.title = title
+            self._set_attribute("title",self.extension,title)
         return self
 
     def set_artist(self,artist)->AudioMetaData:
-        self.artist = artist
-        self._set_attribute("artist",self.extension,artist)
+        if artist:
+            self.artist = artist
+            self._set_attribute("artist",self.extension,artist)
         return self
 
     def set_album(self,album)->AudioMetaData:
-        self.album = album
-        self._set_attribute("album",self.extension,album)
+        if album:
+            self.album = album
+            self._set_attribute("album",self.extension,album)
         return self
 
     def set_cover_art_url(self,cover_art_url)->AudioMetaData:
-        self.cover_art_url = cover_art_url
-        self._set_attribute("cover-art",self.extension,cover_art_url)
+        if cover_art_url:
+            self.cover_art_url = cover_art_url
+            self._set_attribute("cover-art",self.extension,cover_art_url)
         return self
 
 

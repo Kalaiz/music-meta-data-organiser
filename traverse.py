@@ -1,6 +1,7 @@
 
 from queue import Queue
 import os
+from custom_exception import NoSuchPath
 from util import SUPPORTED_AUDIO_EXTENSIONS 
 
 
@@ -9,9 +10,7 @@ def traverse(path=None) -> Queue:
         path  = os.getcwd()
 
     if  not os.path.isdir(path):
-        # TODO: Error handling
-        pass
- 
+        raise NoSuchPath(str(path))
 
     queue = Queue()
     for root, _, files in os.walk(path):

@@ -21,7 +21,7 @@ def fetch_cover_art_url(response:dict):
     try:
         result = response["track"]["images"]["coverart"]
     except (KeyError, TypeError) as e:
-        logging.error("No cover art url  found")
+        logging.error("No cover art url found")
     return result
 
 def fetch_album(response:dict):

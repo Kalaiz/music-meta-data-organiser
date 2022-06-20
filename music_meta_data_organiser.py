@@ -1,5 +1,15 @@
 """Music meta data organiser - Organises the meta data of audio files.
-Usage: music_meta_data_organiser <directory> [-s format] [rmca] [ca] [fn] [ab] [at] 
+Usage: 
+    music_meta_data_organiser (-h | --help)
+    music_meta_data_organiser <directory> 
+    music_meta_data_organiser <directory> (-s format | --standardise=format)
+    music_meta_data_organiser <directory> (rmca | --remove-cover-art)
+    music_meta_data_organiser <directory> (ca | --set-cover-art)
+    music_meta_data_organiser <directory> (fn | --set-album-name)
+    music_meta_data_organiser <directory> (ab | --set-album-name)
+    music_meta_data_organiser <directory> (at | --set-artist-name)
+    music_meta_data_organiser <directory> [-s format] [fn] [ab] [at] [ca] [rmca]
+
 
 Options:
     -s format --standardise=format  Standardises the format of the audio files. # Note: Do not append '.' in front of the format.      
@@ -12,6 +22,7 @@ Options:
 """
 
 import json
+from queue import Queue
 import random
 import sys
 import asyncio
@@ -29,26 +40,41 @@ from pydub.exceptions import CouldntDecodeError
 from docopt import docopt
 
 
-def main(directory,standardisation_format) -> int:
+def main(args:dict) -> int:
+    """Example of args: 
+        {'--standardise': None,
+        '<directory>': '.',
+        'ab': False,
+        'at': False,
+        'ca': False,
+        'fn': False,
+        'rmca': False}"""
+    directory = args.get(util.ARG_DIRECTORY_KEY)
     try:
         queue = traverse(path=directory)
     except NoSuchPath as error:
         print("Invalid path: "+ error.args[0]+ "\nPlease input a valid one.")
-        return
+        return -1
+
     logging.basicConfig(filename="meta-data-organiser.log")
     logging.root.setLevel(logging.INFO)
     logging.getLogger().addHandler(logging.StreamHandler())
-    asyncio.run(process(queue,standardisation_format))
+
+    asyncio.run(process(queue,args))
     return 0
 
 
-async def process(queue, standardisation_format):
+async def process(queue:Queue, args:dict):
 
     shazam = Shazam()
-
+    logging.debug("Queue size "+ str(queue.qsize()))
     bar = Bar("Current progress", max=queue.qsize())
     while queue:
-        current_music_file_path = queue.get()
+
+        try:
+         current_music_file_path = queue.get_nowait()
+        except:
+          break
 
         logging.info("\nProcessing "+ current_music_file_path)
 
@@ -61,42 +87,62 @@ async def process(queue, standardisation_format):
 
         logging.debug(json.dumps(result))
 
-        if standardisation_format:
-                convert_to_specific_format(current_music_file_path,format=standardisation_format)
+        standardisation_format = args.get(util.ARG_STANDARDISE_KEY,None) 
+        is_album_needed = args.get(util.ARG_ALBUM_KEY,None)
+        is_artist_needed = args.get(util.ARG_ARTIST_KEY,None)
+        is_cover_art_needed = args.get(util.ARG_COVER_ART_KEY,None)
+        is_file_name_needed = args.get(util.ARG_FILE_NAME_KEY,None)
+        is_cover_art_to_be_removed = args.get(util.ARG_REMOVE_COVER_ART_KEY,None)
+        current_file_format = util.get_extension(current_music_file_path)
+
+        if standardisation_format and current_file_format != standardisation_format:
+            logging.debug("Converting "+ current_music_file_path +" to the format "+ standardisation_format)
+            current_music_file_path = convert_to_specific_format(current_music_file_path,format=standardisation_format)
+                 
 
         audio_meta_data = AudioMetaData(current_music_file_path)
 
-        cover_art_image_url = fetch_cover_art_url(result)
         title = fetch_title(result)
-        artist = fetch_artist(result)
-        album = fetch_album(result)
+        audio_meta_data = audio_meta_data.set_title(title) 
 
-        audio_meta_data = audio_meta_data.set_title(title) \
-                       .set_album(album)  \
-                       .set_artist(artist) \
-                       .remove_cover_art()
-                    #    .set_cover_art_url(cover_art_image_url)
-       
+        if is_album_needed:
+            album = fetch_album(result)
+            audio_meta_data = audio_meta_data.set_album(album)
+        
+        if is_artist_needed:
+            artist = fetch_artist(result)
+            audio_meta_data = audio_meta_data.set_artist(artist)
+
+        if is_cover_art_to_be_removed:
+            audio_meta_data = audio_meta_data.remove_cover_art()
+        
+        if is_cover_art_needed:
+            cover_art_image_url = fetch_cover_art_url(result)
+            logging.debug(cover_art_image_url)
+            audio_meta_data = audio_meta_data.set_cover_art_url(cover_art_image_url)
+
         audio_meta_data.save()
 
-        cleaned_title = util.clean_title(title)
-        util.rename_file_name(current_music_file_path,cleaned_title)
+        if is_file_name_needed:
+            cleaned_title = util.clean_title(title)
+            util.rename_file_name(current_music_file_path,cleaned_title,format=standardisation_format)
+
         sleep(random.uniform(0.1, 5))
 
         bar.next()
         logging.info("\n")
         
+    
+    logging.info("Done!")
     bar.finish()
 
 if __name__ == '__main__':
     args = docopt(__doc__, help=True, version=None, options_first=False)
-    directory_arg = args.get("<directory>")
     standardised_arg = args.get("--standardise") 
     is_valid_format = standardised_arg in util.SUPPORTED_AUDIO_EXTENSIONS
-    if (standardised_arg != None) and (not is_valid_format):
+    if (not standardised_arg ) and (not is_valid_format):
         supported_formats = ''.join(["\n-"+str(audio_format) for audio_format in util.SUPPORTED_AUDIO_EXTENSIONS])
         print("Audio format is not supported. Please try using any of these formats: " + supported_formats +'\n')
-        sys.exit()
+        sys.exit(-1)
     else:      
-        print(args)
-        # sys.exit(main(directory_arg,standardised_arg))
+        sys.exit(main(args))

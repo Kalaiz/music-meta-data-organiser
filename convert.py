@@ -5,7 +5,7 @@ import util
 
 
 
-def convert_to_specific_format(path: str,format="mp3"):
+def convert_to_specific_format(path: str,format="mp3") -> str:
     extension = util.get_extension(path)
     
     try:
@@ -18,6 +18,7 @@ def convert_to_specific_format(path: str,format="mp3"):
     file_name_with_extension_path = file_name_path + '.' + format
     file_unique_identifier = 1
 
+    logging.debug("convert_to_specific_format "+ path)
     while os.path.exists(file_name_with_extension_path):
         logging.info("File already exist; " + file_name_with_extension_path +
                      "; Appending numericals behind to make it unique.")
@@ -27,3 +28,5 @@ def convert_to_specific_format(path: str,format="mp3"):
     music_file.export(file_name_with_extension_path, format=format)
     os.remove(path=path)
     logging.info("Successfully converted  " + path)
+    logging.debug("Has convert_to_specific_format method executed properly? "+ str(os.path.exists(file_name_with_extension_path.split('.')[0] + '.' + format)))
+    return file_name_with_extension_path

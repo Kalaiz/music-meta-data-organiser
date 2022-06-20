@@ -73,6 +73,7 @@ class AudioMetaData:
 
     def _set_cover_art(self,extension,actual_attribute_value,meta_tag,url):
         cover_art_mime_type = guess_mime_type(url)
+        logging.debug("set_cover_art "+ cover_art_mime_type)
         image_type = get_extension(url)
         if cover_art_mime_type:
             cover_art = urlopen(url)
@@ -81,7 +82,7 @@ class AudioMetaData:
                                 encoding=3,
                                 mime=cover_art_mime_type,
                                 type=3,
-                                desc="Cover",
+                                desc=u"Cover",
                                 data=cover_art.read()
                                 ))
             elif extension == "m4a":

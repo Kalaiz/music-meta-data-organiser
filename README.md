@@ -16,13 +16,13 @@ A simple command line tool which can standardise formats of music files, add met
 
 
 <p align="center">
-<img src="resources/cmd-help.gif" width="85%" height="85%" /> 
+<img src="resources/cmd-help.gif" width="95%" height="95%" /> 
 </br>
 <sub>Command line tool help documentation.</sub>
 </p>
 
 <p align="center">
-<video src="https://user-images.githubusercontent.com/44941115/174575397-4e625674-dbb6-4bfc-a8df-86526ef0e999.mp4" controls="controls" width="75%" height="75%"/>
+<video src="https://user-images.githubusercontent.com/44941115/174575397-4e625674-dbb6-4bfc-a8df-86526ef0e999.mp4" controls="controls" />
 </p>
 <p align="center">
 <sub>Command line tool in action.</sub>
@@ -31,13 +31,13 @@ A simple command line tool which can standardise formats of music files, add met
 [**User Story Map**](/resources/usm.svg)
 
 ### 🛠️ Tools Used:
-- ShazamIO
-- Mutagen
-- Audd API
-- PyDub
-- Pytest
+- [mutagen](https://mutagen.readthedocs.io/en/latest/)
+- [progress](https://pypi.org/project/progress/)
+- [pydub](https://pydub.com/)
+- [shazamio](https://github.com/dotX12/ShazamIO#readme)
+- [pytest](https://docs.pytest.org/en/7.1.x/)
+- [docopt](http://docopt.org/)
 - Python
-- docopt
 
 
 ### 🔖 References:

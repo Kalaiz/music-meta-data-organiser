@@ -1,5 +1,5 @@
 # Music meta-data organiser
-![Status](https://img.shields.io/badge/status-work--in--progress-red)
+![Status](https://img.shields.io/badge/status-viewable-green)
 
 A command line tool which cleans and organises the metadata of music files. 
 
@@ -12,18 +12,21 @@ A command line tool which cleans and organises the metadata of music files.
     - [⚙️ Installation:](#️-installation)
 
 ### 📜 Description:
-A command line tool which can standardise formats of music files, add meta data such as title, cover art and artist names to the music files, without any input.
+A simple command line tool which can standardise formats of music files, add meta data such as title, cover art and artist names to the music files, without any input.
 
 
 <p align="center">
-<img src="resources/cmd-help.gif" width="75%" height="75%" /> 
+<img src="resources/cmd-help.gif" width="85%" height="85%" /> 
+</br>
+<sub>Command line tool help documentation.</sub>
+</p>
+
+<p align="center">
+<video src="https://user-images.githubusercontent.com/44941115/174575397-4e625674-dbb6-4bfc-a8df-86526ef0e999.mp4" controls="controls" width="75%" height="75%"/>
 </p>
 <p align="center">
-<video width="75%" height="75%" controls="controls">
-  <source src="resources/cmd-process.mp4"  type="video/mp4">
-</video>
- </p>
-
+<sub>Command line tool in action.</sub>
+</p>
 
 [**User Story Map**](/resources/usm.svg)
 

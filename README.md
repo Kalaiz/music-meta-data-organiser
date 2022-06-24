@@ -16,9 +16,9 @@ A simple command line tool which can standardise formats of music files, add met
 
 
 <p align="center">
-<img src="resources/cmd-help.gif" width="95%" height="95%" /> 
+<img src="resources/cmd-help.gif" /> 
 </br>
-<sub>Command line tool help documentation.</sub>
+<sub>Command line tool's help documentation.</sub>
 </p>
 
 <p align="center">
@@ -37,6 +37,7 @@ A simple command line tool which can standardise formats of music files, add met
 - [shazamio](https://github.com/dotX12/ShazamIO#readme)
 - [pytest](https://docs.pytest.org/en/7.1.x/)
 - [docopt](http://docopt.org/)
+- [TextUSM vscode extension](https://marketplace.visualstudio.com/items?itemName=harehare.textusm)
 - Python
 
 
